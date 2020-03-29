@@ -965,6 +965,7 @@ export default class GameLogListComponent extends Component<GameLogListComponent
                             </tr>))}
                     </table>
                 </>);
+                
             case "player-replaced":
                 const oldUser = this.props.ingameGameState.entireGame.users.get(data.oldUser);
                 const newUser = this.props.ingameGameState.entireGame.users.get(data.newUser);
@@ -975,6 +976,15 @@ export default class GameLogListComponent extends Component<GameLogListComponent
                         <b>{oldUser.name}</b> (<b>{house.name}</b>) was replaced by <b>{newUser.name}</b>.
                     </>
                 );
+
+            case "vassals-claimed":
+                const vassals = data.vassals.map(hid => this.game.houses.get(hid));
+                house = this.game.houses.get(data.house);
+
+                return <>
+                    <b>{house.name}</b> claimed {joinReactNodes(vassals.map(v => <b key={v.id}>{v.name}</b>), ", ")} as
+                    vassal{vassals.length > 0 && "s"}.
+                </>;
         }
     }
 }

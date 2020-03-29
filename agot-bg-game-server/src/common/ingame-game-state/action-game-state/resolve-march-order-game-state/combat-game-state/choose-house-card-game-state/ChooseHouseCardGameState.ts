@@ -48,28 +48,29 @@ export default class ChooseHouseCardGameState extends GameState<CombatGameState>
 
     onPlayerMessage(player: Player, message: ClientMessage): void {
         if (message.type == "choose-house-card") {
-            if (!this.combatGameState.houseCombatDatas.has(player.house)) {
+            if (!this.combatGameState.isCommandingHouseInCombat(player.house)) {
                 return;
             }
 
-            const houseCard = player.house.houseCards.get(message.houseCardId);
+            const commandedHouse = this.combatGameState.getCommandedHouseInCombat(player.house);
+            const houseCard = commandedHouse.houseCards.get(message.houseCardId);
 
-            if (!this.getChoosableCards(player.house).includes(houseCard)) {
+            if (!this.getChoosableCards(commandedHouse).includes(houseCard)) {
                 return;
             }
 
-            this.houseCards.set(player.house, houseCard);
+            this.houseCards.set(commandedHouse, houseCard);
 
-            const otherHouses = _.difference(this.parentGameState.game.houses.values, [player.house]);
+            const otherHouses = _.difference(this.parentGameState.game.houses.values, [commandedHouse]);
             this.entireGame.sendMessageToClients(otherHouses.map(h => this.combatGameState.ingameGameState.getControllerOfHouse(h).user), {
                 type: "house-card-chosen",
-                houseId: player.house.id,
+                houseId: commandedHouse.id,
                 houseCardId: null
             });
 
             this.entireGame.sendMessageToClients([player.user], {
                 type: "house-card-chosen",
-                houseId: player.house.id,
+                houseId: commandedHouse.id,
                 houseCardId: houseCard.id
             });
 

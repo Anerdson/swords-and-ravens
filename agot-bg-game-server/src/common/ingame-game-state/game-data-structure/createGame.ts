@@ -12,8 +12,8 @@ import wildlingCardTypes from "./wildling-card/wildlingCardTypes";
 import BetterMap from "../../../utils/BetterMap";
 import * as _ from "lodash";
 import houseCardAbilities from "./house-card/houseCardAbilities";
-import EntireGame from "../../EntireGame";
 import staticWorld from "./static-data-structure/globalStaticWorld";
+import IngameGameState from "../IngameGameState";
 
 const MAX_POWER_TOKENS = 20;
 
@@ -38,10 +38,10 @@ export interface GameSetup {
     tracks?: { ironThrone?: string[]; fiefdoms?: string[]; kingsCourt?: string[] };
 }
 
-export default function createGame(entireGame: EntireGame, housesToCreate: string[]): Game {
-    const gameSetup = entireGame.getSelectedGameSetup();
+export default function createGame(ingame: IngameGameState, housesToCreate: string[]): Game {
+    const gameSetup = ingame.entireGame.getSelectedGameSetup();
 
-    const game = new Game();
+    const game = new Game(ingame);
 
     game.houses = new BetterMap(Object.entries(baseGameData.houses)
         .filter(([hid, _]) => housesToCreate.includes(hid))
